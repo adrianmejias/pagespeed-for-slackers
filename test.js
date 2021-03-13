@@ -1,13 +1,11 @@
-var test = require('./index.js');
+const test = require("./index.js");
 
-var mock = {
-  fail: function(str) {
-    console.log('FAIL: ' + str);
-  },
-
-  succeed: function(str) {
-    console.log(str);
-  }
-};
-
-test.handler({ url: 'http://example.com' }, mock);
+test.handler(
+	{
+		url: "https://www.google.com",
+	},
+	{
+		succeed: (str) => console.log,
+		fail: (err) => console.error,
+	}
+);

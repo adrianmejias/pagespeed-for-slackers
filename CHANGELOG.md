@@ -1,13 +1,13 @@
-# Change Log
-All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
+# Release Notes
 
-## [Unreleased][unreleased]
-Nothing so far.
+## [Unreleased](https://github.com/adrianmejias/pagespeed-for-slackers/compare/v1.0.0...v1.x)
 
-## [0.1.0] - 2015-06-21
+## [v1.0.0 (2021-03-13)](https://github.com/adrianmejias/pagespeed-for-slackers/releases/tag/v1.0.0)
+
+### Changed
+- Initial re-release of project.
+
+## [v0.1.0 (2015-06-21)](https://github.com/CoffeeAndCode/pagespeed-for-slackers/releases/tag/v0.1.0)
+
 ### Added
 - Initial release of project.
-
-[unreleased]: https://github.com/CoffeeAndCode/pagespeed-for-slackers/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/CoffeeAndCode/pagespeed-for-slackers/releases/tag/v0.1.0

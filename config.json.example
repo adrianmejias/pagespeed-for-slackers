@@ -1,0 +1,15 @@
+{
+    "pagespeed": {
+        "key": "my-google-api-key",
+        "strategy": [
+            "desktop",
+            "mobile"
+        ],
+        "minGoodScore": 80,
+        "minWarningScore": 60
+    },
+    "slack": {
+        "channel": "#my-slack-room",
+        "incomingWebHook": "https://hooks.slack.com/services/xxxxxx/xxxxxx/xxxxxx"
+    }
+}

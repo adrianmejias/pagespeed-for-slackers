@@ -1,20 +1,33 @@
 {
-  "name": "pagespeed-for-slackers",
-  "version": "0.1.0",
-  "description": "Send Slack notifications about Google PageSpeed as your website updates on S3.",
-  "main": "index.js",
-  "dependencies": {
-    "bluebird": "^2.9.30",
-    "lodash": "^3.8.0",
-    "pretty-bytes": "^1.0.4",
-    "psi": "^1.0.6",
-    "request": "^2.55.0"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "package": "zip -r lambda.zip . -x *.git*",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Coffee and Code",
-  "license": "ISC"
+    "name": "pagespeed-for-slackers",
+    "version": "1.0.0",
+    "description": " Send Slack notifications about Google PageSpeed as your website updates on S3.",
+    "main": "index.js",
+    "dependencies": {
+        "psi": "^4.0.1",
+        "request": "^2.55.0"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "package": "zip -r lambda.zip . -x *.git*",
+        "postinstall": "test -f './config.json' || cp config.json.example config.json",
+        "test": "node test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/adrianmejias/pagespeed-for-slackers.git"
+    },
+    "keywords": [
+        "slack",
+        "lambda",
+        "aws",
+        "google",
+        "pagespeed"
+    ],
+    "author": "Coffee and Code",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/adrianmejias/pagespeed-for-slackers/issues"
+    },
+    "homepage": "https://github.com/adrianmejias/pagespeed-for-slackers"
 }

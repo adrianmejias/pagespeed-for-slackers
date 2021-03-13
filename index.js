@@ -1,104 +1,144 @@
-var _ = require('lodash');
-var Promise = require('bluebird');
-var prettyBytes = require('pretty-bytes');
-var psi = Promise.promisify(require('psi'));
-var request = require('request');
+const psi = require("psi");
+const request = require("request");
 
-var config = require('./config.json');
+const config = require("./config.json");
 
-console.log('Loading function');
+function colorForCategory(category) {
+	if (category === "FAST") {
+		return "good";
+	}
 
-function byteFormatter(value) {
-  return prettyBytes(parseFloat(value));
+	if (category === "AVERAGE") {
+		return "warning";
+	}
+
+	return "danger";
 }
 
 function colorForScore(score) {
-  if (score >= config.pagespeed.goodScore) {
-    return 'good';
-  } else if (score >= config.pagespeed.warningScore) {
-    return 'warning';
-  } else {
-    return 'danger';
-  }
+	if (score >= config.pagespeed.minGoodScore) {
+		return "good";
+	}
+
+	if (score >= config.pagespeed.minWarningScore) {
+		return "warning";
+	}
+
+	return "danger";
 }
 
 function createAttachment(data, strategy, url) {
-  return {
-    fallback: 'Google PageSpeed score (' + strategy + '): ' + data.score + "\nhttps://developers.google.com/speed/pagespeed/insights/?url=" + url + '&tab=' + config.pagespeed.strategy,
-    title: 'Google PageSpeed score (' + strategy + '): ' + data.score,
-    title_link: 'https://developers.google.com/speed/pagespeed/insights/?url=' + url + '&tab=' + strategy,
-    fields: pageStatFields(data.pageStats),
-    color: colorForScore(data.score),
-    text: url
-  };
-}
-
-function numberFormatter(value) {
-  return value;
-}
-
-function pageStatFields(data) {
-  var display = {
-    cssResponseBytes: { formatter: byteFormatter, label: 'CSS size' },
-    htmlResponseBytes: { formatter: byteFormatter, label: 'HTML size' },
-    imageResponseBytes: { formatter: byteFormatter, label: 'Image size' },
-    javascriptResponseBytes: { formatter: byteFormatter, label: 'JavaScript size' },
-    numberCssResources: { formatter: numberFormatter, label: 'CSS Resources' },
-    numberHosts: { formatter: numberFormatter, label: 'Hosts' },
-    numberJsResources: { formatter: numberFormatter, label: 'JS Resources' },
-    numberResources: { formatter: numberFormatter, label: 'Total Resources' },
-    numberStaticResources: { formatter: numberFormatter, label: 'Static Resources' },
-    totalRequestBytes: { formatter: byteFormatter, label: 'Total Size' }
-  };
-
-  return _.map(data, function(value, key) {
-    return {
-      short: true,
-      title: display.hasOwnProperty(key) && display[key].hasOwnProperty('label') ? display[key].label : key,
-      value: display.hasOwnProperty(key) && display[key].hasOwnProperty('formatter') ? display[key].formatter(value) : value
-    };
-  });
+	// performance, accessbility, best-practices, seo, pwa
+	const score = data.lighthouseResult.categories.performance.score * 100;
+	const pageStats = [
+		{
+			short: true,
+			title: "Cumulative Layout Shift Score",
+			value:
+				data.loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE
+					.category,
+			color: colorForCategory(
+				data.loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE
+					.category
+			),
+		},
+		{
+			short: true,
+			title: "First Contentful Paint MS",
+			value:
+				data.loadingExperience.metrics.FIRST_CONTENTFUL_PAINT_MS
+					.category,
+			color: colorForCategory(
+				data.loadingExperience.metrics.FIRST_CONTENTFUL_PAINT_MS
+					.category
+			),
+		},
+		{
+			short: true,
+			title: "First Input Delay MS",
+			value: data.loadingExperience.metrics.FIRST_INPUT_DELAY_MS.category,
+			color: colorForCategory(
+				data.loadingExperience.metrics.FIRST_INPUT_DELAY_MS.category
+			),
+		},
+		{
+			short: true,
+			title: "Largest Contentful Paint MS",
+			value:
+				data.loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS
+					.category,
+			color: colorForCategory(
+				data.loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS
+					.category
+			),
+		},
+		{
+			short: true,
+			title: "Overall",
+			value: data.loadingExperience.overall_category,
+			color: colorForCategory(data.loadingExperience.overall_category),
+		},
+	];
+	return {
+		fallback: `Google PageSpeed Score for ${strategy.toUpperCase()}: ${score}\nhttps://developers.google.com/speed/pagespeed/insights/?url=${url}&tab=${
+			config.pagespeed.strategy
+		}`,
+		title: `Google PageSpeed Score for ${strategy.toUpperCase()}: ${score}`,
+		title_link: `https://developers.google.com/speed/pagespeed/insights/?url=${url}&tab=${strategy}`,
+		fields: pageStats,
+		color: colorForScore(score),
+		text: url,
+	};
 }
 
 function postToSlack(context, attachments) {
-  var payload = {
-    channel: config.slack.channel,
-    attachments: attachments
-  };
-
-  request({
-    url: config.slack.incomingWebHook,
-    method: 'POST',
-    json: true,
-    headers: {
-      'content-type': 'application/json'
-    },
-    body: payload
-  }, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
-      context.succeed(body);
-    } else {
-      context.fail(JSON.stringify(response, null, 2));
-    }
-  });
+	request(
+		{
+			url: config.slack.incomingWebHook,
+			method: "POST",
+			json: true,
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: {
+				channel: config.slack.channel,
+				attachments: attachments,
+			},
+		},
+		(err, res, body) => {
+			if (!err && res.statusCode === 200) {
+				context.succeed(body);
+			} else {
+				context.fail(JSON.stringify(res, null, 2));
+			}
+		}
+	);
 }
 
-exports.handler = function(event, context) {
-  console.log('Lambda event data:');
-  console.log(JSON.stringify(event, null, 2));
+exports.handler = (e, context) => {
+	if (e.hasOwnProperty("url")) {
+		if (!config.pagespeed.key) {
+			context.fail("Config pagespeed did not include 'key' property.");
+			return;
+		}
 
-  if (event.hasOwnProperty('url')) {
-    Promise.map(['desktop', 'mobile'], function(strategy) {
-      return psi(event.url, {
-        strategy: strategy,
-        threshold: config.pagespeed.warningScore
-      }).then(function(data) {
-        return createAttachment(data, strategy, event.url);
-      });
-    }).then(function(attachments) {
-      postToSlack(context, attachments);
-    });
-  } else {
-    context.fail('Event data did not include "url" property.');
-  }
+		Promise.all(
+			config.pagespeed.strategy.map((strategy) => {
+				return psi(e.url, {
+					key: config.pagespeed.key,
+					strategy: strategy,
+					threshold: config.pagespeed.warningScore,
+				}).then((res) => {
+					return createAttachment(res.data, strategy, e.url);
+				});
+			})
+		)
+			.then((attachments) => postToSlack(context, attachments))
+			.catch((err) => {
+				context.fail(err);
+			});
+	} else {
+		context.fail("Event data did not include 'url' property.");
+	}
 };
