@@ -1,6 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/adrianmejias/pagespeed-for-slackers/compare/v1.0.0...v1.x)
+## [Unreleased](https://github.com/adrianmejias/pagespeed-for-slackers/compare/v1.0.1...v1.x)
+
+## [v1.0.1 (2021-03-13)](https://github.com/adrianmejias/pagespeed-for-slackers/releases/tag/v1.0.1)
+
+### Added
+- Added package locks to ignore file.
+- Added editorconfig file.
+
+### Removed
+- Removed initial npm package lock file.
 
 ## [v1.0.0 (2021-03-13)](https://github.com/adrianmejias/pagespeed-for-slackers/releases/tag/v1.0.0)
 

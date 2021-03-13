@@ -75,5 +75,9 @@ typings/
 # FuseBox cache
 .fusebox/
 
+# package locks
+package-lock.json
+yarn.lock
+
 lambda.zip
 config.json
