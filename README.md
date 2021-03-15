@@ -1,6 +1,6 @@
 # PageSpeed for Slack
 
-[![Build Status](https://travis-ci.org/adrianmejias/pagespeed-for-slackers.svg?branch=master)](https://travis-ci.org/adrianmejias/pagespeed-for-slackers)
+[![Build Status](https://travis-ci.com/adrianmejias/pagespeed-for-slackers.svg?branch=1.x)](https://travis-ci.com/adrianmejias/pagespeed-for-slackers)
 
 This will run an AWS Lambda function to collect Google PageSpeed information about a provided url and send it to Slack's incoming webhook.
 
@@ -52,6 +52,6 @@ aws lambda invoke --invocation-type RequestResponse \
 
 ## Related Links
 
-[Node.js](https://nodejs.org)
-[AWS Lambda](https://aws.amazon.com/lambda/details)
-[API Gateway](https://aws.amazon.com/api-gateway)
+- [Node.js](https://nodejs.org)
+- [AWS Lambda](https://aws.amazon.com/lambda/details)
+- [API Gateway](https://aws.amazon.com/api-gateway)
