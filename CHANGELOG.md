@@ -1,6 +1,15 @@
 # Release Notes
 
-## [Unreleased](https://github.com/adrianmejias/pagespeed-for-slackers/compare/v1.0.1...v1.x)
+## [Unreleased](https://github.com/adrianmejias/pagespeed-for-slackers/compare/v1.0.2...v1.x)
+## [v1.0.2 (2021-03-14)](https://github.com/adrianmejias/pagespeed-for-slackers/releases/tag/v1.0.2)
+
+### Added
+- Added lambda-tester, mocha, axios, and chai npm packages.
+- Added tests.
+- Added travis file.
+
+### Removed
+- Removed initial test file.
 
 ## [v1.0.1 (2021-03-13)](https://github.com/adrianmejias/pagespeed-for-slackers/releases/tag/v1.0.1)
 

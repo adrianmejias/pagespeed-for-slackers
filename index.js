@@ -1,144 +1,63 @@
-const psi = require("psi");
-const request = require("request");
+"use strict";
+
+const axios = require("axios").default;
 
 const config = require("./config.json");
+const { isUrl } = require("./src/is-url");
+const { getAttachments } = require("./src/attachments");
 
-function colorForCategory(category) {
-    if (category === "FAST") {
-        return "good";
+exports.handler = async (event, context, callback) => {
+    if (!event.hasOwnProperty("url")) {
+        context.fail("No url property specified.");
+        return;
     }
 
-    if (category === "AVERAGE") {
-        return "warning";
+    if (!isUrl(event.url)) {
+        context.fail("Invalid url property specified.");
+        return;
     }
 
-    return "danger";
-}
-
-function colorForScore(score) {
-    if (score >= config.pagespeed.minGoodScore) {
-        return "good";
+    if (!config.pagespeed.key) {
+        context.fail("No pagespeed api key specified.");
+        return;
     }
 
-    if (score >= config.pagespeed.minWarningScore) {
-        return "warning";
+    let attachments = null;
+
+    try {
+        attachments = await getAttachments(event.url);
+    } catch (err) {
+        context.fail(err.message);
+        return;
     }
 
-    return "danger";
-}
+    let result = null;
 
-function createAttachment(data, strategy, url) {
-    // performance, accessbility, best-practices, seo, pwa
-    const score = data.lighthouseResult.categories.performance.score * 100;
-    const pageStats = [
-        {
-            short: true,
-            title: "Cumulative Layout Shift Score",
-            value:
-                data.loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE
-                    .category,
-            color: colorForCategory(
-                data.loadingExperience.metrics.CUMULATIVE_LAYOUT_SHIFT_SCORE
-                    .category
-            ),
-        },
-        {
-            short: true,
-            title: "First Contentful Paint MS",
-            value:
-                data.loadingExperience.metrics.FIRST_CONTENTFUL_PAINT_MS
-                    .category,
-            color: colorForCategory(
-                data.loadingExperience.metrics.FIRST_CONTENTFUL_PAINT_MS
-                    .category
-            ),
-        },
-        {
-            short: true,
-            title: "First Input Delay MS",
-            value: data.loadingExperience.metrics.FIRST_INPUT_DELAY_MS.category,
-            color: colorForCategory(
-                data.loadingExperience.metrics.FIRST_INPUT_DELAY_MS.category
-            ),
-        },
-        {
-            short: true,
-            title: "Largest Contentful Paint MS",
-            value:
-                data.loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS
-                    .category,
-            color: colorForCategory(
-                data.loadingExperience.metrics.LARGEST_CONTENTFUL_PAINT_MS
-                    .category
-            ),
-        },
-        {
-            short: true,
-            title: "Overall",
-            value: data.loadingExperience.overall_category,
-            color: colorForCategory(data.loadingExperience.overall_category),
-        },
-    ];
-    return {
-        fallback: `Google PageSpeed Score for ${strategy.toUpperCase()}: ${score}\nhttps://developers.google.com/speed/pagespeed/insights/?url=${url}&tab=${
-            config.pagespeed.strategy
-        }`,
-        title: `Google PageSpeed Score for ${strategy.toUpperCase()}: ${score}`,
-        title_link: `https://developers.google.com/speed/pagespeed/insights/?url=${url}&tab=${strategy}`,
-        fields: pageStats,
-        color: colorForScore(score),
-        text: url,
-    };
-}
-
-function postToSlack(context, attachments) {
-    request(
-        {
-            url: config.slack.incomingWebHook,
-            method: "POST",
-            json: true,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-            body: {
+    try {
+        result = await axios.post(
+            config.slack.incomingWebHook,
+            {
                 channel: config.slack.channel,
                 attachments: attachments,
             },
-        },
-        (err, res, body) => {
-            if (!err && res.statusCode === 200) {
-                context.succeed(body);
-            } else {
-                context.fail(JSON.stringify(res, null, 2));
+            {
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
             }
-        }
-    );
-}
-
-exports.handler = (e, context) => {
-    if (e.hasOwnProperty("url")) {
-        if (!config.pagespeed.key) {
-            context.fail("Config pagespeed did not include 'key' property.");
-            return;
-        }
-
-        Promise.all(
-            config.pagespeed.strategy.map((strategy) => {
-                return psi(e.url, {
-                    key: config.pagespeed.key,
-                    strategy: strategy,
-                    threshold: config.pagespeed.warningScore,
-                }).then((res) => {
-                    return createAttachment(res.data, strategy, e.url);
-                });
-            })
-        )
-            .then((attachments) => postToSlack(context, attachments))
-            .catch((err) => {
-                context.fail(err);
-            });
-    } else {
-        context.fail("Event data did not include 'url' property.");
+        );
+    } catch (err) {
+        context.fail(err.message);
+        return;
     }
+
+    context.succeed(
+        JSON.stringify({
+            success: true,
+            url: event.url,
+            strategy: config.pagespeed.strategy,
+            result: result,
+        })
+    );
 };

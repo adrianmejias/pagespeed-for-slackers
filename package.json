@@ -4,14 +4,19 @@
     "description": " Send Slack notifications about Google PageSpeed as your website updates on S3.",
     "main": "index.js",
     "dependencies": {
+        "axios": "^0.21.1",
         "psi": "^4.0.1",
         "request": "^2.55.0"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "chai": "^4.3.4",
+        "lambda-tester": "^4.0.1",
+        "mocha": "^8.3.2"
+    },
     "scripts": {
-        "package": "zip -r lambda.zip . -x *.git*",
+        "build": "zip -r lambda.zip . -x *.git*",
         "postinstall": "test -f './config.json' || cp config.json.example config.json",
-        "test": "node test.js"
+        "test": "node_modules/mocha/bin/mocha --timeout 60000"
     },
     "repository": {
         "type": "git",

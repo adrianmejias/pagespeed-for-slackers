@@ -1,12 +1,14 @@
 # PageSpeed for Slack
 
+[![Build Status](https://travis-ci.org/adrianmejias/pagespeed-for-slackers.svg?branch=master)](https://travis-ci.org/adrianmejias/pagespeed-for-slackers)
+
 This will run an AWS Lambda function to collect Google PageSpeed information about a provided url and send it to Slack's incoming webhook.
 
 Forked from [PageSpeed for Slackers](https://github.com/CoffeeAndCode/pagespeed-for-slackers)
 
 ![Example Slack Message](./example.png)
 
-## Setup
+## Getting Started
 
 Run `npm install` to install the project's dependencies.
 
@@ -30,23 +32,15 @@ The configuration is pulled through a file called `config.json` that will be cre
 }
 ```
 
-## Testing Slack
+## Testing
 
 You can run the following command to see if your messages will end up in Slack:
 
 `npm test`
 
-## Creating Zip File For Lamda
+## AWS Lamda Installation
 
-Once the app is working in the *Testing Slack* section, you can package up your app for uploading to Lambda with the following command:
-
-`npm run package`
-
-## Trigging the Lambda Function
-
-Originally, the intent was to watch S3 events and trigger the lambda function when the bucket content changes.
-
-However, the current limitation of not being able to filter viable events and throttling caused by too many events at the same time forced me to manually trigger the lambda function as an additional step of the build process.
+Once the app is working in the *Testing* section, you can package up your app for uploading to AWS Lambda with the `npm build` command. This will create a zip file that may  be invoked to AWS via the following command:
 
 ```bash
 aws lambda invoke --invocation-type RequestResponse \
@@ -55,3 +49,9 @@ aws lambda invoke --invocation-type RequestResponse \
                   --payload '{"url": "http://www.google.com/"}' \
                   YourLambdaFunctionName-output.txt
 ```
+
+## Related Links
+
+[Node.js](https://nodejs.org)
+[AWS Lambda](https://aws.amazon.com/lambda/details)
+[API Gateway](https://aws.amazon.com/api-gateway)
