@@ -1,6 +1,14 @@
 # Release Notes
 
-## [Unreleased](https://github.com/adrianmejias/pagespeed-for-slackers/compare/v1.0.2...v1.x)
+## [Unreleased](https://github.com/adrianmejias/pagespeed-for-slackers/compare/v1.0.3...v1.x)
+
+## [v1.0.3 (2021-03-14)](https://github.com/adrianmejias/pagespeed-for-slackers/releases/tag/v1.0.3)
+
+### Fixed
+- Updated description of package.
+- Updated README.md build image.
+- Updated README.md, travis, workflow build command.
+
 ## [v1.0.2 (2021-03-14)](https://github.com/adrianmejias/pagespeed-for-slackers/releases/tag/v1.0.2)
 
 ### Added

@@ -1,7 +1,8 @@
 {
+    "private": true,
     "name": "pagespeed-for-slackers",
-    "version": "1.0.0",
-    "description": " Send Slack notifications about Google PageSpeed as your website updates on S3.",
+    "version": "1.0.3",
+    "description": " Send Slack notifications about Google PageSpeed.",
     "main": "index.js",
     "dependencies": {
         "axios": "^0.21.1",

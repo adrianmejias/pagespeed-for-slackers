@@ -40,7 +40,7 @@ You can run the following command to see if your messages will end up in Slack:
 
 ## AWS Lamda Installation
 
-Once the app is working in the *Testing* section, you can package up your app for uploading to AWS Lambda with the `npm build` command. This will create a zip file that may  be invoked to AWS via the following command:
+Once the app is working in the *Testing* section, you can package up your app for uploading to AWS Lambda with the `npm run-script build` command. This will create a zip file that may  be invoked to AWS via the following command:
 
 ```bash
 aws lambda invoke --invocation-type RequestResponse \
